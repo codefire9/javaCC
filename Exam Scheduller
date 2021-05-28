@@ -1,0 +1,110 @@
+Step - 1.
+
+public class GenerateAssesesmentFunction implements Function<String, Assessment>{
+
+@Override
+public Assessment apply(String t){
+
+//write your code here
+
+String temp[] =t.split(",");
+Assessment a=new Assessment(temp[0],temp[1],LocalDate.parse(temp[2]), LocalTime.parse(temp[3]),Duration.parse(temp[4]),Period.parse(temp[5]));           
+
+return a;
+}
+}
+
+step-2
+
+public class FileUtil{
+public static List<Assessment> loadData(String fileName) throws IOException{
+
+List<Assessment> list=null;
+Function<String, Assessment> function=new GenerateAssessmentFunction();
+BufferedReader br=new BufferedReader(new FileReader(fileName));
+String line="";
+list =new ArrayList<Assessment>();
+
+while((line=br.readLine())!=null){
+list.add(function.apply(line));
+
+//write your code here..
+return list;
+
+}
+}
+
+step- 3
+
+
+public class AssessmentDAO{
+public int uploadAssessment(List<Assessment> assessments) throws Exception {
+
+if(assessments==null || assessments.isEmpty()){
+throws new Exception("List is Empty");
+}
+int rowsCount=0;
+//write logic here..
+try{
+
+Connection con=DatabaseUtil.getConnection();
+for(Assessment a: assessments){
+PreparedStatement st=con.prepareStatement("insert into assessment values(?,?,?,?,?,?)");  
+
+st.setString(1,a.getExamCode());
+st.setString(2,a.getExamTitle());
+st.setString(3,a.getExamDate().toString());
+st.setString(4,a.getExamTime().toString());
+st.setString(5,a.getExamDuration().toString());
+st.setString(6,a.getEvalDays().toString());
+
+int res=st.executeUpdate();
+if(rs!=-1)
+rowsCount=rowsCount+1;
+}
+}catch(SQLException e){
+}
+return rowsCount;
+}
+}
+
+step - 4.
+public void printDetails(){
+//write your code here..
+
+DateTimeFormatter date1=DateTimeFormatter.ofPattern("dd-MMM-y");
+DateTimeFormatter date2=DateTimeFormatter.ofPattern("HH:mm");
+
+LocalTime t=examTime.plus(examDuration);
+String d=DateTimeFormatter.ofPattern("HH:mm").format(t);
+LocalDate t1=examDate.plus(evalDays);
+String d1=DateTimeFormatter.ofPattern("dd-MMM-y").format(t1);
+
+System.out.println("Assessment Code: "+examCode);
+System.out.println("Title: "+examTitle);
+System.out.println("Assessment Date: "+examDate.format(date1));
+System.out.println("Start Time: "+examTime.format(date2));
+System.out.println("End Time: "+d);
+System.out.println("Result Date: "+d1);
+
+
+}
+
+
+
+
+
+[Additional imports if needed]
+
+import java.io.*;
+import java.util.*;
+import java.time.*;
+
+
+
+
+
+
+
+
+
